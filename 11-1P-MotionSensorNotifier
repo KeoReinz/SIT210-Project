@@ -1,0 +1,71 @@
+//---------------------------------------------------------------------------------------------
+//                               Setting up initial variables
+//--------------------------------------------------------------------------------------------- 
+
+// creating a variable into my code to read off the sensor data. Initially set to 0 for a 
+// LOW state.
+int SensorValue = 0; 
+
+// Using the Digital Pin 2 that my motion sensor is connected to.
+int SensorInput = 2;    
+
+// Using the in-built LED light on the Argon particle
+int InBuiltLED = 7;  
+
+//---------------------------------------------------------------------------------------------
+//                             Setting up the Pins of the project
+//--------------------------------------------------------------------------------------------- 
+ 
+void setup() {
+  // Setting up 2 pins from the hardware, the LED pin and the Sensor Pin.
+  // The sensor Pin will require 'input' from the PIR Motion sensor in order to enact the 
+  // process of the functions.
+  pinMode(SensorInput, INPUT);  
+  
+  // Using that input from the sensor, the LED light will be set to 'Output' as the results 
+  // from the input will be outputted via the LED light
+  pinMode(InBuiltLED, OUTPUT);      
+}
+ 
+//---------------------------------------------------------------------------------------------
+//                                   Setting up looping code
+//--------------------------------------------------------------------------------------------- 
+
+void loop(){
+
+  // Reads the data from the Digital Pin 2 to the variable 'SensorValue'
+  SensorValue = digitalRead(SensorInput); 
+  
+  // The main function of the program. Reads off >0 or 0 variables (On / Off input)
+  // If the Output is HIGH, the code activates, if not, nothing happens.
+  if (SensorValue == HIGH){  
+
+    // Sets the LED pin light to HIGH which means to turn on the lED
+    digitalWrite(InBuiltLED, HIGH);
+    
+    // Publishes the event named 'MotionDetected' with the phrasing "Someone has been detected" 
+    // as the event descriptor. This has the same event name used for the webhook process for IFTTT
+    Particle.publish("MotionDetected", "Someone has been detected");
+    
+    // Delay set to 3 seconds as motion detection is relatively quick, so turning off the LED 
+    // is good practice
+    delay(3000);
+    
+    // Sets the LED pin light to LOW which means to turn off the lED
+    //digitalWrite(InBuiltLED, LOW); 
+  } 
+  
+  else {
+    // Sets the LED pin light to LOW which means to turn off the lED
+    digitalWrite(InBuiltLED, LOW);
+    
+    
+    // Publishes the event named 'MotionNone'. Doesn't get published however to IFTTT.
+    Particle.publish("MotionNone", "No Motion");
+    
+    // Delay set to 1 second intervals as no motion is more frequent.
+    delay(1000);
+  }
+}
+
+//--------------------------------------------------------------------------------------------- 
